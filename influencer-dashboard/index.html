@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthKart - Influencer Marketing Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="brand">
+                    <h1>HealthKart</h1>
+                    <p>Influencer Marketing Dashboard</p>
+                </div>
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="totalRevenue">₹11.46M</div>
+                        <div class="kpi-label">Total Revenue</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="totalOrders">9,652</div>
+                        <div class="kpi-label">Total Orders</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="totalPayouts">₹963K</div>
+                        <div class="kpi-label">Total Payouts</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="avgRoas">11.89</div>
+                        <div class="kpi-label">Average ROAS</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Sidebar Filters -->
+            <aside class="sidebar">
+                <div class="filters">
+                    <h3>Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label class="form-label">Platform</label>
+                        <select class="form-control" id="platformFilter">
+                            <option value="">All Platforms</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Twitter">Twitter</option>
+                            <option value="TikTok">TikTok</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="form-label">Brand</label>
+                        <select class="form-control" id="brandFilter">
+                            <option value="">All Brands</option>
+                            <option value="MuscleBlaze">MuscleBlaze</option>
+                            <option value="HKVitals">HKVitals</option>
+                            <option value="Gritzo">Gritzo</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="form-label">Campaign</label>
+                        <select class="form-control" id="campaignFilter">
+                            <option value="">All Campaigns</option>
+                            <option value="Summer2024">Summer2024</option>
+                            <option value="BackToGym">BackToGym</option>
+                            <option value="HealthyKids">HealthyKids</option>
+                            <option value="WinterWellness">WinterWellness</option>
+                            <option value="FitnessGoals">FitnessGoals</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-control" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Fitness">Fitness</option>
+                            <option value="Lifestyle">Lifestyle</option>
+                            <option value="Health">Health</option>
+                            <option value="Nutrition">Nutrition</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <button class="btn btn--primary btn--full-width" id="applyFilters">Apply Filters</button>
+                        <button class="btn btn--secondary btn--full-width" id="resetFilters">Reset</button>
+                    </div>
+
+                    <div class="export-section">
+                        <h4>Export Data</h4>
+                        <button class="btn btn--outline btn--full-width" id="exportCsv">Export CSV</button>
+                        <button class="btn btn--outline btn--full-width" id="exportReport">Generate Report</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content">
+                <!-- Tab Navigation -->
+                <nav class="tab-nav">
+                    <button class="tab-btn active" data-tab="overview">Campaign Performance</button>
+                    <button class="tab-btn" data-tab="roas">ROAS Analysis</button>
+                    <button class="tab-btn" data-tab="influencers">Influencer Insights</button>
+                    <button class="tab-btn" data-tab="payouts">Payout Tracking</button>
+                </nav>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Campaign Performance Tab -->
+                    <div class="tab-panel active" id="overview">
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>Revenue Trends</h3>
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Platform Performance</h3>
+                                <canvas id="platformChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <h3>Campaign Performance</h3>
+                            <table class="data-table" id="campaignTable">
+                                <thead>
+                                    <tr>
+                                        <th>Campaign</th>
+                                        <th>Revenue</th>
+                                        <th>Orders</th>
+                                        <th>ROAS</th>
+                                        <th>Engagement</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- ROAS Analysis Tab -->
+                    <div class="tab-panel" id="roas">
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>ROAS by Platform</h3>
+                                <canvas id="roasChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Cost vs Revenue</h3>
+                                <canvas id="costRevenueChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <h4>Best Performing Platform</h4>
+                                <div class="metric-value" id="bestPlatform">Instagram</div>
+                                <div class="metric-subtitle">ROAS: 15.2</div>
+                            </div>
+                            <div class="metric-card">
+                                <h4>Incremental ROAS</h4>
+                                <div class="metric-value" id="incrementalRoas">8.5</div>
+                                <div class="metric-subtitle">vs baseline</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Influencer Insights Tab -->
+                    <div class="tab-panel" id="influencers">
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>Top Influencers by Revenue</h3>
+                                <canvas id="topInfluencersChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Follower Count Distribution</h3>
+                                <canvas id="followersChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <h3>Influencer Performance</h3>
+                            <table class="data-table" id="influencerTable">
+                                <thead>
+                                    <tr>
+                                        <th>Influencer</th>
+                                        <th>Platform</th>
+                                        <th>Followers</th>
+                                        <th>Revenue</th>
+                                        <th>ROAS</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Payout Tracking Tab -->
+                    <div class="tab-panel" id="payouts">
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>Payout Distribution</h3>
+                                <canvas id="payoutChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>Payment Basis Breakdown</h3>
+                                <canvas id="paymentBasisChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <h3>Payout Summary</h3>
+                            <table class="data-table" id="payoutTable">
+                                <thead>
+                                    <tr>
+                                        <th>Influencer</th>
+                                        <th>Basis</th>
+                                        <th>Rate</th>
+                                        <th>Orders/Posts</th>
+                                        <th>Total Payout</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
